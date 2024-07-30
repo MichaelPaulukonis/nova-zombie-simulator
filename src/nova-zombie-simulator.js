@@ -19,20 +19,18 @@ let sound = {}
 
 let sketch1 = new p5(p => {
   p.preload = () => {
-    console.log('preload')
     sound.scream = p.loadSound(
-      '/assets/audio/64940__syna-max__wilhelm_scream.wav'
+      'audio/64940__syna-max__wilhelm_scream.wav'
     )
     sound.gunshot = p.loadSound(
-      '/assets/audio/128297__xenonn__layered-gunshot-7.wav'
+      'audio/128297__xenonn__layered-gunshot-7.wav'
     )
     sound.crunch = p.loadSound(
-      '/assets/audio/524609__clearwavsound__bone-crunch.wav'
+      'audio/524609__clearwavsound__bone-crunch.wav'
     )
     sound.thing = p.loadSound(
-      '/assets/audio/425941__jarethorin__loopy-thing.wav'
+      'audio/425941__jarethorin__loopy-thing.wav'
     )
-    console.log('preload complete')
   }
 
   const gameMode = {
@@ -72,7 +70,6 @@ let sketch1 = new p5(p => {
   }
 
   function startGame () {
-    console.log('start game')
     player = new Player(p, config.livesMax)
     config.level = 0
     config.score = 0
@@ -98,10 +95,8 @@ let sketch1 = new p5(p => {
     player.display()
 
     if (player.lives <= 0) {
-      config.gameMode = gameMode.GAME_OVER
+      config.mode = gameMode.GAME_OVER
       sound.scream.play()
-      // p.textSize(32)
-      // p.text('Game Over', p.width / 2 - 100, p.height / 2)
       return
     }
 

@@ -4,6 +4,7 @@ const { defineConfig } = require('vite')
 
 module.exports = defineConfig({
   base: process.env.DEPLOY_ENV === 'GH_PAGES' ? '/nova-zombie-simulator/' : '',
+  assetsInclude: ['**/**/*.wav'],
   build: {
     rollupOptions: {
       input: {
