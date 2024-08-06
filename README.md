@@ -3,6 +3,18 @@
 A game in p5js designed by my son
 
 
+## audio
+
+Bone Crunch by Clearwavsound -- https://freesound.org/s/524609/ -- License: Attribution 3.0
+
+wilhelm_scream.wav by Syna-Max -- https://freesound.org/s/64940/ -- License: Attribution NonCommercial 4.0
+
+Layered Gunshot 7.wav by Xenonn -- https://freesound.org/s/128297/ -- License: Creative Commons 0
+
+Carpenter meets Tron Seq (120 BPM).wav by Xinematix -- https://freesound.org/s/262442/ -- License: Attribution 4.0
+
+Loopy Thing.wav by jarethorin -- https://freesound.org/s/425941/ -- License: Creative Commons 0
+
 ## uses P5.js-vite Starter Template 🚀
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)

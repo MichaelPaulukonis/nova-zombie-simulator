@@ -1,5 +1,11 @@
-import { sketch } from 'p5js-wrapper'
-import 'p5js-wrapper/sound'
+// import { p5 } from 'p5js-wrapper'
+
+await import('p5js-wrapper');
+window.planck = await import('planck');
+await import('p5play');
+await import('p5js-wrapper/sound')
+
+// p5play maybe from https://github.com/lojoyu/ancient-ceremony/blob/main/src/p5play.js#L5
 
 import Player from './nova.player.js'
 import Soldier from './nova.soldier.js'
@@ -17,7 +23,7 @@ let humanLimit = 12
 let doctorLimit = 1
 let sound = {}
 
-let sketch1 = new p5(p => {
+new p5(p => {
   p.preload = () => {
     sound.scream = p.loadSound(
       'audio/64940__syna-max__wilhelm_scream.wav'
@@ -164,6 +170,7 @@ let sketch1 = new p5(p => {
     p.frameRate(30)
     p.noStroke()
     p.textStyle(p.BOLD)
+    p.textAlign(p.CENTER, p.CENTER)
 
     let restartButton = p.createButton('Start')
     // canvas positions are different inside of the animate loop. hrm.
@@ -180,20 +187,28 @@ let sketch1 = new p5(p => {
     }
   }
 
-  p.keyTyped = () => {
+  function handleKeyInput() {
     if (config.mode === gameMode.PLAYING) {
-      if (p.key === 'p' || p.key === ' ') {
-        config.mode = gameMode.PAUSED
+      if (p.key === 'p' || p.keyCode === 32) {
+        config.mode = gameMode.PAUSED;
       }
     } else if (config.mode === gameMode.PAUSED) {
-      if (p.key === 'p' || p.key === ' ') {
-        config.mode = gameMode.PLAYING
+      if (p.key === 'p' || p.keyCode === 32) {
+        config.mode = gameMode.PLAYING;
       }
     } else if (config.mode === gameMode.GAME_OVER) {
-      startGame()
+      startGame();
     } else if (config.mode === gameMode.HELP) {
-      config.mode = gameMode.ATTRACT
+      config.mode = gameMode.ATTRACT;
     }
+  }
+
+  p.keyTyped = () => {
+    handleKeyInput();
+  }
+
+  p.keyPressed = () => {
+    handleKeyInput();
   }
 
   p.draw = () => {
@@ -201,22 +216,30 @@ let sketch1 = new p5(p => {
       p.background(0)
       p.fill(255)
       p.textSize(32)
-      p.text('Nova Zombie Simulator', p.width / 2 - 200, p.height / 2)
-      p.text('Click to Start', p.width / 2 - 100, p.height / 2 + 50)
+      p.text('Nova Zombie Simulator', p.width / 2, p.height / 2)
+      p.text('Click to Start', p.width / 2, p.height / 2 + 50 )
+      return
+    }
+    if (config.mode === gameMode.PAUSED) {
+      p.background(0)
+      p.fill(255)
+      p.textSize(32)
+      p.text('Paused', p.width / 2, p.height / 2)
+      p.text(`Press 'p' or 'space' to continue`, p.width / 2, p.height / 2 + 50 )
       return
     }
     if (config.mode === gameMode.GAME_OVER) {
       p.background(0)
       p.fill(255)
       p.textSize(32)
-      p.text('Game Over', p.width / 2 - 100, p.height / 2)
+      p.text('Game Over', p.width / 2, p.height / 2)
       return
     }
     if (config.mode === gameMode.HELP) {
       p.background(0)
       p.fill(255)
       p.textSize(32)
-      p.text('Help', p.width / 2 - 100, p.height / 2)
+      p.text('Help', p.width / 2, p.height / 2)
       return
     }
     if (config.mode !== gameMode.PLAYING) {
