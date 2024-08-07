@@ -8,6 +8,8 @@ export default  class Doctor {
 
       this.sprite = new ctx.Sprite(this.x, this.y, 20);
       this.sprite.text = '+'
+      this.sprite.textSize = 20
+      this.sprite.textColor = 'white'
       this.sprite.color = 'red'
     }
 

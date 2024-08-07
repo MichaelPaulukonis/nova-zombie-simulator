@@ -5,6 +5,12 @@ export default  class Soldier {
       this.y = this.ctx.random(this.ctx.height)
       this.noiseOffsetX = this.ctx.random(1000)
       this.noiseOffsetY = this.ctx.random(1000)
+
+      this.sprite = new ctx.Sprite(this.x, this.y, 20);
+      this.sprite.text = '✭'
+      this.sprite.textSize = 20
+      this.sprite.textColor = 'yellow'
+      this.sprite.color = 'olive'
     }
 
     move (player, zombies) {
@@ -33,9 +39,11 @@ export default  class Soldier {
     }
 
     display () {
-      this.ctx.fill('olive')
-      this.ctx.ellipse(this.x, this.y, 20, 20)
+      // this.ctx.fill('olive')
+      // this.ctx.ellipse(this.x, this.y, 20, 20)
       // draw a fat 5-pointed star
+      this.sprite.x = this.x
+      this.sprite.y = this.y
     }
 
     touches (other) {

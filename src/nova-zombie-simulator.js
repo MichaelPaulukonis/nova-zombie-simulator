@@ -1,8 +1,8 @@
 // import { p5 } from 'p5js-wrapper'
 
-await import('p5js-wrapper');
-window.planck = await import('planck');
-await import('p5play');
+await import('p5js-wrapper')
+window.planck = await import('planck')
+await import('p5play')
 await import('p5js-wrapper/sound')
 
 // p5play maybe from https://github.com/lojoyu/ancient-ceremony/blob/main/src/p5play.js#L5
@@ -25,18 +25,10 @@ let sound = {}
 
 new p5(p => {
   p.preload = () => {
-    sound.scream = p.loadSound(
-      'audio/64940__syna-max__wilhelm_scream.wav'
-    )
-    sound.gunshot = p.loadSound(
-      'audio/128297__xenonn__layered-gunshot-7.wav'
-    )
-    sound.crunch = p.loadSound(
-      'audio/524609__clearwavsound__bone-crunch.wav'
-    )
-    sound.thing = p.loadSound(
-      'audio/425941__jarethorin__loopy-thing.wav'
-    )
+    sound.scream = p.loadSound('audio/64940__syna-max__wilhelm_scream.wav')
+    sound.gunshot = p.loadSound('audio/128297__xenonn__layered-gunshot-7.wav')
+    sound.crunch = p.loadSound('audio/524609__clearwavsound__bone-crunch.wav')
+    sound.thing = p.loadSound('audio/425941__jarethorin__loopy-thing.wav')
   }
 
   const gameMode = {
@@ -55,6 +47,12 @@ new p5(p => {
   }
 
   function resetLevel () {
+    let objs = [humans, zombies, doctors, soldiers]
+    for (const arr of objs) {
+      for (const p of arr) {
+        p.sprite.remove()
+      }
+    }
     humans = []
     zombies = []
     soldiers = []
@@ -112,6 +110,7 @@ new p5(p => {
       human.display()
       if (player.touches(human)) {
         sound.crunch.play()
+        human.sprite.remove()
         zombies.push(new Zombie(human.x, human.y, p))
         humans.splice(humans.indexOf(human), 1)
         config.score++
@@ -124,9 +123,9 @@ new p5(p => {
       for (let human of humans) {
         if (zombie.touches(human)) {
           sound.crunch.play()
+          human.sprite.remove()
           zombies.push(new Zombie(human.x, human.y, p))
           humans.splice(humans.indexOf(human), 1)
-          // config.score++Í
         }
       }
     }
@@ -140,6 +139,7 @@ new p5(p => {
       for (let zombie of zombies) {
         if (soldier.touches(zombie)) {
           sound.gunshot.play()
+          zombie.sprite.remove()
           zombies.splice(zombies.indexOf(zombie), 1)
         }
       }
@@ -150,7 +150,8 @@ new p5(p => {
       doctor.display()
       for (let zombie of zombies) {
         if (doctor.touches(zombie)) {
-          // sound.gunshot.play()
+          // TODO: healing sound. harp strum?
+          zombie.sprite.remove()
           humans.push(new Human(zombie.x, zombie.y, p))
           zombies.splice(zombies.indexOf(zombie), 1)
         }
@@ -187,44 +188,58 @@ new p5(p => {
     }
   }
 
-  function handleKeyInput() {
+  function handleKeyInput () {
     if (config.mode === gameMode.PLAYING) {
       if (p.key === 'p' || p.keyCode === 32) {
-        config.mode = gameMode.PAUSED;
+        pauseGame()
       }
     } else if (config.mode === gameMode.PAUSED) {
       if (p.key === 'p' || p.keyCode === 32) {
-        config.mode = gameMode.PLAYING;
+        unpauseGame()
       }
     } else if (config.mode === gameMode.GAME_OVER) {
-      startGame();
+      startGame()
     } else if (config.mode === gameMode.HELP) {
-      config.mode = gameMode.ATTRACT;
+      config.mode = gameMode.ATTRACT
     }
   }
 
   p.keyTyped = () => {
-    handleKeyInput();
+    handleKeyInput()
   }
 
   p.keyPressed = () => {
-    handleKeyInput();
+    handleKeyInput()
+  }
+
+  const pauseGame = () => {
+    config.mode = gameMode.PAUSED
+    let objs = [humans, zombies, doctors, soldiers]
+    for (const arr of objs) {
+      for (const p of arr) {
+        p.sprite.visible = false
+      }
+    }
+  }
+
+  const unpauseGame = () => {
+    config.mode = gameMode.PLAYING
+    let objs = [humans, zombies, doctors, soldiers]
+    for (const arr of objs) {
+      for (const p of arr) {
+        p.sprite.visible = true
+      }
+    }
   }
 
   p.draw = () => {
-
-    // this works!
-    // let sprite = new p.Sprite();
-    // sprite.width = 50;
-    // sprite.height = 50;
-
     if (config.mode === gameMode.ATTRACT) {
       p.background(0)
       p.fill(255)
       p.textSize(32)
       p.textAlign(p.CENTER)
       p.text('Nova Zombie Simulator', p.width / 2, p.height / 2)
-      p.text('Click to Start', p.width / 2, p.height / 2 + 50 )
+      p.text('Click to Start', p.width / 2, p.height / 2 + 50)
       return
     }
     if (config.mode === gameMode.PAUSED) {
@@ -233,7 +248,7 @@ new p5(p => {
       p.textSize(32)
       p.textAlign(p.CENTER)
       p.text('Paused', p.width / 2, p.height / 2)
-      p.text(`Press 'p' or 'space' to continue`, p.width / 2, p.height / 2 + 50 )
+      p.text(`Press 'p' or 'space' to continue`, p.width / 2, p.height / 2 + 50)
       return
     }
     if (config.mode === gameMode.GAME_OVER) {

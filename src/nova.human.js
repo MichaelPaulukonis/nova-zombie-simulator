@@ -5,6 +5,12 @@ export default class Human {
       this.y = y || this.ctx.random(this.ctx.height)
       this.noiseOffsetX = this.ctx.random(1000)
       this.noiseOffsetY = this.ctx.random(1000)
+
+      this.sprite = new ctx.Sprite(this.x, this.y, 20);
+      this.sprite.image = '😃'
+      // this.sprite.textSize = 20
+      // this.sprite.textColor = 'blue'
+      // this.sprite.color = 'white'
     }
 
     move (zombies, player) {
@@ -33,7 +39,7 @@ export default class Human {
     }
 
     display () {
-      this.ctx.fill('white')
-      this.ctx.ellipse(this.x, this.y, 20, 20)
+      this.sprite.x = this.x
+      this.sprite.y = this.y
     }
   }
