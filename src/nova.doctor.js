@@ -5,6 +5,10 @@ export default  class Doctor {
       this.y = this.ctx.random(this.ctx.height)
       this.noiseOffsetX = this.ctx.random(1000)
       this.noiseOffsetY = this.ctx.random(1000)
+
+      this.sprite = new ctx.Sprite(this.x, this.y, 20);
+      this.sprite.text = '+'
+      this.sprite.color = 'red'
     }
 
     move (zombies) {
@@ -28,8 +32,10 @@ export default  class Doctor {
     }
 
     display () {
-      this.ctx.fill('red')
-      this.ctx.ellipse(this.x, this.y, 20, 20)
+      // this.ctx.fill('red')
+      // this.ctx.ellipse(this.x, this.y, 20, 20)
+      this.sprite.x = this.x
+      this.sprite.y = this.y
     }
 
     touches (other) {

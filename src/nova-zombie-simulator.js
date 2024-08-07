@@ -90,6 +90,7 @@ new p5(p => {
   function displayScore () {
     p.fill(0)
     p.textSize(24)
+    p.textAlign(p.LEFT)
     p.text('Score: ' + config.score, 10, 30)
     p.text('Round: ' + config.level, 10, 60)
     p.text(`Lives: ${player.lives}`, 10, 90)
@@ -170,7 +171,6 @@ new p5(p => {
     p.frameRate(30)
     p.noStroke()
     p.textStyle(p.BOLD)
-    p.textAlign(p.CENTER, p.CENTER)
 
     let restartButton = p.createButton('Start')
     // canvas positions are different inside of the animate loop. hrm.
@@ -212,10 +212,17 @@ new p5(p => {
   }
 
   p.draw = () => {
+
+    // this works!
+    // let sprite = new p.Sprite();
+    // sprite.width = 50;
+    // sprite.height = 50;
+
     if (config.mode === gameMode.ATTRACT) {
       p.background(0)
       p.fill(255)
       p.textSize(32)
+      p.textAlign(p.CENTER)
       p.text('Nova Zombie Simulator', p.width / 2, p.height / 2)
       p.text('Click to Start', p.width / 2, p.height / 2 + 50 )
       return
@@ -224,6 +231,7 @@ new p5(p => {
       p.background(0)
       p.fill(255)
       p.textSize(32)
+      p.textAlign(p.CENTER)
       p.text('Paused', p.width / 2, p.height / 2)
       p.text(`Press 'p' or 'space' to continue`, p.width / 2, p.height / 2 + 50 )
       return
@@ -232,6 +240,7 @@ new p5(p => {
       p.background(0)
       p.fill(255)
       p.textSize(32)
+      p.textAlign(p.CENTER)
       p.text('Game Over', p.width / 2, p.height / 2)
       return
     }
@@ -239,6 +248,7 @@ new p5(p => {
       p.background(0)
       p.fill(255)
       p.textSize(32)
+      p.textAlign(p.CENTER)
       p.text('Help', p.width / 2, p.height / 2)
       return
     }

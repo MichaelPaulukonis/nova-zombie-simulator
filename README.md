@@ -3,6 +3,11 @@
 A game in p5js designed by my son
 
 
+## p5Play
+
+maybe using https://p5play.org/
+
+
 ## audio
 
 Bone Crunch by Clearwavsound -- https://freesound.org/s/524609/ -- License: Attribution 3.0
@@ -15,6 +20,7 @@ Carpenter meets Tron Seq (120 BPM).wav by Xinematix -- https://freesound.org/s/2
 
 Loopy Thing.wav by jarethorin -- https://freesound.org/s/425941/ -- License: Creative Commons 0
 
+
 ## uses P5.js-vite Starter Template 🚀
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
@@ -23,21 +29,6 @@ Loopy Thing.wav by jarethorin -- https://freesound.org/s/425941/ -- License: Cre
 
 This is an unopinionated template; aside from P5.js and Vite, the rest of your project's tools are entirely up to you.
 
-## Live demo
-
-For a live demo please [visit this page](https://p5js-vite-demo.surge.sh).
-
-## Installation
-
-Pull the template files with [degit](https://github.com/Rich-Harris/degit) and install dependencies.
-
-```
-npx degit makinteract/p5js-vite my-project
-
-cd my-project
-npm install
-npm run dev
-```
 
 ## npm scripts
 
