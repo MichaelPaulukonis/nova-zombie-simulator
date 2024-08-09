@@ -1,52 +1,40 @@
-export default  class Soldier {
-    constructor (ctx) {
-      this.ctx = ctx
-      this.x = this.ctx.random(this.ctx.width)
-      this.y = this.ctx.random(this.ctx.height)
-      this.noiseOffsetX = this.ctx.random(1000)
-      this.noiseOffsetY = this.ctx.random(1000)
+import Mobile from './nova.mobile.js'
 
-      this.sprite = new ctx.Sprite(this.x, this.y, 20);
-      this.sprite.text = '✭'
-      this.sprite.textSize = 20
-      this.sprite.textColor = 'yellow'
-      this.sprite.color = 'olive'
+export default class Soldier extends Mobile {
+  constructor (ctx, x, y, speed, noiseSpeed) {
+    super(ctx, x, y, speed, noiseSpeed)
+
+    // mmmmm hrm
+    this.x = this.ctx.random(this.ctx.width)
+    this.y = this.ctx.random(this.ctx.height)
+
+    this.sprite.text = '✭'
+    this.sprite.textSize = 20
+    this.sprite.textColor = 'yellow'
+    this.sprite.color = 'olive'
+  }
+
+  move (player, zombies) {
+    super.move()
+
+    // TODO: we can concievable move twice now, towards 2 things
+    // this is like an illegal speed up
+
+    // Move towards player 
+    if (this.proximityTo(player) < 200) {
+      let angle = this.ctx.atan2(player.y - this.y, player.x - this.x)
+      this.x += this.ctx.cos(angle) * 2
+      this.y += this.ctx.sin(angle) * 2
     }
 
-    move (player, zombies) {
-      this.x += this.ctx.map(this.ctx.noise(this.noiseOffsetX), 0, 1, -2.5, 2.5)
-      this.y += this.ctx.map(this.ctx.noise(this.noiseOffsetY), 0, 1, -2.5, 2.5)
-      this.noiseOffsetX += 0.01
-      this.noiseOffsetY += 0.01
-
-      // Wrap-around logic
-      if (this.x < 0) this.x = this.ctx.width
-      if (this.x > this.ctx.width) this.x = 0
-      if (this.y < 0) this.y = this.ctx.height
-      if (this.y > this.ctx.height) this.y = 0
-
-      // Move towards player and zombies
-      if (this.ctx.dist(this.x, this.y, player.x, player.y) < 200) {
-        this.x += (player.x - this.x) * 0.02
-        this.y += (player.y - this.y) * 0.02
+    // Move towards a zombie
+    for (let zombie of zombies) {
+      if (this.proximityTo(zombie) < 200) {
+        let angle = this.ctx.atan2(this.y - zombie.y, this.x - zombie.x)
+        this.x -= this.ctx.cos(angle) * 2
+        this.y -= this.ctx.sin(angle) * 2
+        break
       }
-      for (let zombie of zombies) {
-        if (this.ctx.dist(this.x, this.y, zombie.x, zombie.y) < 200) {
-          this.x += (zombie.x - this.x) * 0.02
-          this.y += (zombie.y - this.y) * 0.02
-        }
-      }
-    }
-
-    display () {
-      // this.ctx.fill('olive')
-      // this.ctx.ellipse(this.x, this.y, 20, 20)
-      // draw a fat 5-pointed star
-      this.sprite.x = this.x
-      this.sprite.y = this.y
-    }
-
-    touches (other) {
-      return this.ctx.dist(this.x, this.y, other.x, other.y) < 20
     }
   }
+}

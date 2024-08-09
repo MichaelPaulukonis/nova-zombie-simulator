@@ -1,64 +1,49 @@
-export default  class Zombie {
-    constructor (x, y, ctx) {
-      this.ctx = ctx
-      this.x = x
-      this.y = y
-      this.noiseOffsetX = this.ctx.random(1000)
-      this.noiseOffsetY = this.ctx.random(1000)
+import Mobile from './nova.mobile.js'
 
-      this.sprite = new ctx.Sprite(this.x, this.y, 20);
-      this.sprite.text = '🤢'
-      this.sprite.textSize = 20
-      this.sprite.textColor = 'white'
-      this.sprite.color = 'blue'
-    }
+export default class Zombie extends Mobile {
+  constructor (ctx, x, y, speed, noiseSpeed) {
+    super(ctx, x, y, speed, noiseSpeed)
 
-    // something like "world" would be a better reference....
-    move (soldiers, humans, doctors) {
-      this.x += this.ctx.map(this.ctx.noise(this.noiseOffsetX), 0, 1, -2, 2)
-      this.y += this.ctx.map(this.ctx.noise(this.noiseOffsetY), 0, 1, -2, 2)
-      this.noiseOffsetX += 0.01
-      this.noiseOffsetY += 0.01
+    this.sprite.text = '🤢'
+    this.sprite.textSize = 20
+    this.sprite.textColor = 'white'
+    this.sprite.color = 'blue'
 
-      // Wrap-around logic
-      if (this.x < 0) this.x = this.ctx.width
-      if (this.x > this.ctx.width) this.x = 0
-      if (this.y < 0) this.y = this.ctx.height
-      if (this.y > this.ctx.height) this.y = 0
+    return this
+  }
 
-      // Avoid soldiers
-      for (let soldier of soldiers) {
-        if (this.ctx.dist(this.x, this.y, soldier.x, soldier.y) < 50) {
-          this.x += (this.x - soldier.x) * 0.04
-          this.y += (this.y - soldier.y) * 0.04
-        }
-      }
+  // something like "world" would be a better reference....
+  move (soldiers, humans, doctors) {
+    super.move()
 
-      // Avoid doctors
-      for (let doctor of doctors) {
-        if (this.ctx.dist(this.x, this.y, doctor.x, doctor.y) < 50) {
-          this.x += (this.x - doctor.x) * 0.02
-          this.y += (this.y - doctor.y) * 0.02
-        }
-      }
-
-      // move towards humans
-      for (let human of humans) {
-        if (this.ctx.dist(this.x, this.y, human.x, human.y) < 100) {
-          this.x += (human.x - this.x) * 0.04
-          this.y += (human.y - this.y) * 0.04
-        }
+    // Avoid soldiers
+    for (let soldier of soldiers) {
+      if (this.proximityTo(soldier) < 50) {
+        let angle = this.ctx.atan2(this.y - soldier.y, this.x - soldier.x)
+        this.x += this.ctx.cos(angle) * 2
+        this.y += this.ctx.sin(angle) * 2
+        break
       }
     }
 
-    display () {
-      // this.ctx.fill('darkblue')
-      // this.ctx.ellipse(this.x, this.y, 20, 20)
-      this.sprite.x = this.x
-      this.sprite.y = this.y
+    // Avoid doctors
+    for (let doctor of doctors) {
+      if (this.proximityTo(doctor) < 50) {
+        let angle = this.ctx.atan2(this.y - doctor.y, this.x - doctor.x)
+        this.x += this.ctx.cos(angle) * 2
+        this.y += this.ctx.sin(angle) * 2
+        break
+      }
     }
 
-    touches (other) {
-      return this.ctx.dist(this.x, this.y, other.x, other.y) < 20
+    // move towards humans
+    for (let human of humans) {
+      if (this.proximityTo(human) < 100) {
+        let angle = this.ctx.atan2(human.y - this.y, human.x - this.x)
+        this.x += this.ctx.cos(angle) * 3
+        this.y += this.ctx.sin(angle) * 3
+        break
+      }
     }
   }
+}

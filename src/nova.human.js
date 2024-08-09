@@ -1,45 +1,42 @@
-export default class Human {
-    constructor (x, y, ctx) {
-      this.ctx = ctx
-      this.x = x || this.ctx.random(this.ctx.width)
-      this.y = y || this.ctx.random(this.ctx.height)
-      this.noiseOffsetX = this.ctx.random(1000)
-      this.noiseOffsetY = this.ctx.random(1000)
+import Mobile from './nova.mobile.js'
 
-      this.sprite = new ctx.Sprite(this.x, this.y, 20);
-      this.sprite.image = '😃'
-      // this.sprite.textSize = 20
-      // this.sprite.textColor = 'blue'
-      // this.sprite.color = 'white'
-    }
+export default class Human extends Mobile {
+  constructor (ctx, x, y, speed, noiseSpeed) {
+    super(ctx, x, y, speed, noiseSpeed)
 
-    move (zombies, player) {
-      this.x += this.ctx.map(this.ctx.noise(this.noiseOffsetX), 0, 1, -2, 2)
-      this.y += this.ctx.map(this.ctx.noise(this.noiseOffsetY), 0, 1, -2, 2)
-      this.noiseOffsetX += 0.01
-      this.noiseOffsetY += 0.01
+    this.sprite.image = '😃'
+  }
 
-      // Wrap-around logic
-      if (this.x < 0) this.x = this.ctx.width
-      if (this.x > this.ctx.width) this.x = 0
-      if (this.y < 0) this.y = this.ctx.height
-      if (this.y > this.ctx.height) this.y = 0
+  move (zombies, player) {
+    super.move()
+    
+    this.x += this.ctx.map(this.ctx.noise(this.noiseOffsetX), 0, 1, -2, 2)
+    this.y += this.ctx.map(this.ctx.noise(this.noiseOffsetY), 0, 1, -2, 2)
+    this.noiseOffsetX += 0.001
+    this.noiseOffsetY += 0.001
 
-      // Avoid player and zombies
-      for (let zombie of zombies) {
-        if (this.ctx.dist(this.x, this.y, zombie.x, zombie.y) < 50) {
-          this.x += (this.x - zombie.x) * 0.05
-          this.y += (this.y - zombie.y) * 0.05
-        }
-      }
-      if (this.ctx.dist(this.x, this.y, player.x, player.y) < 50) {
-        this.x += (this.x - player.x) * 0.05
-        this.y += (this.y - player.y) * 0.05
+    // Wrap-around logic
+    if (this.x < 0) this.x = this.ctx.width
+    if (this.x > this.ctx.width) this.x = 0
+    if (this.y < 0) this.y = this.ctx.height
+    if (this.y > this.ctx.height) this.y = 0
+
+    // Avoid player and zombies
+    for (let zombie of zombies) {
+      if (this.ctx.dist(this.x, this.y, zombie.x, zombie.y) < 50) {
+        this.x += (this.x - zombie.x) * 0.05
+        this.y += (this.y - zombie.y) * 0.05
+        break
       }
     }
-
-    display () {
-      this.sprite.x = this.x
-      this.sprite.y = this.y
+    if (this.ctx.dist(this.x, this.y, player.x, player.y) < 50) {
+      this.x += (this.x - player.x) * 0.05
+      this.y += (this.y - player.y) * 0.05
     }
   }
+
+  display () {
+    this.sprite.x = this.x
+    this.sprite.y = this.y
+  }
+}

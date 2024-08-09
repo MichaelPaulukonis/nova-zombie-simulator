@@ -1,11 +1,18 @@
 # NOVA ZOMBIE SIMULATOR
 
-A game in p5js designed by my son
+A game in p5js designed by my son, coded by us
 
 
 ## p5Play
 
-maybe using https://p5play.org/
+- https://p5play.org/
+- https://p5play.org/docs/index.html (API reference)
+- https://openprocessing.org/user/350295?view=sketches&o=48
+
+- https://github.com/quinton-ashley/p5play
+- https://discord.gg/EJwnJATmj7
+- https://github.com/quinton-ashley/mie
+- 
 
 
 ## audio
@@ -19,6 +26,12 @@ Layered Gunshot 7.wav by Xenonn -- https://freesound.org/s/128297/ -- License: C
 Carpenter meets Tron Seq (120 BPM).wav by Xinematix -- https://freesound.org/s/262442/ -- License: Attribution 4.0
 
 Loopy Thing.wav by jarethorin -- https://freesound.org/s/425941/ -- License: Creative Commons 0
+
+Tremolo Strings 2 by nomiqbomi -- https://freesound.org/s/578581/ -- License: Creative Commons 0
+
+Bite (Cartoon Style) by Jofae -- https://freesound.org/s/353067/ -- License: Creative Commons 0
+
+Nom Noise by TheDragonsSpark -- https://freesound.org/s/543386/ -- License: Attribution 4.0
 
 
 ## uses P5.js-vite Starter Template 🚀
