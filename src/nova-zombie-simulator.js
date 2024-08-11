@@ -9,15 +9,8 @@ import Zombie from './nova.zombie.js'
 import Human from './nova.human.js'
 import Doctor from './nova.doctor.js'
 
-let player
-let humans = []
-let zombies = []
-let soldiers = []
-let doctors = []
-let soldierLimit = 2
-let humanLimit = 12
-let doctorLimit = 1
 let sound = {}
+let helpObjs = []
 
 new p5(p => {
   p.preload = () => {
@@ -28,6 +21,8 @@ new p5(p => {
     sound.heal = p.loadSound('audio/578581__nomiqbomi__tremolo-strings-2.mp3')
     sound.nomnom = p.loadSound('audio/543386__thedragonsspark__nom-noise.wav')
     sound.bite = p.loadSound('audio/353067__jofae__bite-cartoon-style.mp3')
+    sound.nom = p.loadSound('audio/nom.smaller.mp3')
+    sound.bell = p.loadSound('audio/taco-bell-bong-sfx-120135.mp3')
   }
 
   const gameMode = {
@@ -40,44 +35,53 @@ new p5(p => {
 
   let params = {
     mode: gameMode.ATTRACT,
+    previousMode: gameMode.ATTRACT,
     score: 0,
     level: 0,
     livesMax: 3,
-    painted: false
+    painted: false,
+    humans: [],
+    zombies: [],
+    doctors: [],
+    soldiers: [],
+    player: null,
+    gameObjs: [],
+    doctorLimit: 1,
+    humanLimit: 12,
+    soldierLimit: 2,
+    helpObjs: []
   }
 
   function resetLevel () {
-    let objs = [humans, zombies, doctors, soldiers]
-    for (const arr of objs) {
-      for (const p of arr) {
-        p.sprite.remove()
-      }
+    params.gameObjs = [params.humans, params.zombies, params.doctors, params.soldiers]
+    params.gameObjs.forEach(objs => objs.forEach(o => o.sprite.remove()))
+
+    params.humans = []
+    params.zombies = []
+    params.soldiers = []
+    params.doctors = []
+    for (let i = 0; i < params.humanLimit; i++) {
+      params.humans.push(new Human(p, null, null))
     }
-    humans = []
-    zombies = []
-    soldiers = []
-    doctors = []
-    for (let i = 0; i < humanLimit; i++) {
-      humans.push(new Human(p, null, null))
+    for (let i = 0; i < params.soldierLimit; i++) {
+      params.soldiers.push(new Soldier(p, null, null, -2.5, 0.02))
     }
-    for (let i = 0; i < soldierLimit; i++) {
-      soldiers.push(new Soldier(p, null, null, -2.5, 0.02))
-    }
-    for (let i = 0; i < doctorLimit; i++) {
-      doctors.push(new Doctor(p, null, null, -2.5, 0.001))
+    for (let i = 0; i < params.doctorLimit; i++) {
+      params.doctors.push(new Doctor(p, null, null, -2.5, 0.001))
     }
     params.level++
     if (params.level % 2 === 0) {
-      soldierLimit++
-      humanLimit += 2
+      params.soldierLimit++
+      params.humanLimit += 2
     }
+    params.gameObjs = [params.humans, params.zombies, params.doctors, params.soldiers]
   }
 
   function startGame () {
-    player = new Player(p, params.livesMax)
     params.level = 0
     params.score = 0
     resetLevel()
+    params.player = new Player(p, null, null, params.livesMax)
     params.mode = gameMode.PLAYING
     if (sound.thing) {
       sound.thing.setVolume(1.0)
@@ -91,77 +95,79 @@ new p5(p => {
     p.textAlign(p.LEFT)
     p.text('Score: ' + params.score, 10, 30)
     p.text('Round: ' + params.level, 10, 60)
-    p.text(`Lives: ${player.lives}`, 10, 90)
+    p.text(`Lives: ${params.player.lives}`, 10, 90)
   }
 
   function playloop () {
     params.painted = false
     p.background(220)
-    player.move()
-    player.display()
+    params.player.move()
+    params.player.display() // needed until x/y directly references sprite
 
-    if (player.lives <= 0) {
+    if (params.player.lives <= 0) {
       params.mode = gameMode.GAME_OVER
       sound.scream.play()
       return
     }
 
-    for (let human of humans) {
-      human.move(zombies, player)
+    for (let human of params.humans) {
+      human.move(params.zombies, params.player)
       human.display()
-      if (player.touches(human)) {
+      if (params.player.touches(human)) {
         sound.bite.play()
         human.sprite.remove()
-        zombies.push(new Zombie(p, human.x, human.y))
-        humans.splice(humans.indexOf(human), 1)
+        params.zombies.push(new Zombie(p, human.x, human.y))
+        params.humans.splice(params.humans.indexOf(human), 1)
         params.score++
       }
     }
 
-    for (let zombie of zombies) {
-      zombie.move(soldiers, humans, doctors)
+    for (let zombie of params.zombies) {
+      zombie.move(params.soldiers, params.humans, params.doctors)
       zombie.display()
-      for (let human of humans) {
+      for (let human of params.humans) {
         if (zombie.touches(human)) {
           sound.nomnom.play()
           human.sprite.remove()
-          zombies.push(new Zombie(p, human.x, human.y))
-          humans.splice(humans.indexOf(human), 1)
+          params.zombies.push(new Zombie(p, human.x, human.y))
+          params.humans.splice(params.humans.indexOf(human), 1)
         }
       }
     }
 
-    for (let soldier of soldiers) {
-      soldier.move(player, zombies)
+    for (let soldier of params.soldiers) {
+      soldier.move(params.player, params.zombies)
       soldier.display()
-      if (soldier.touches(player) && !player.invulnerable) {
-        player.killed()
+      if (soldier.touches(params.player) && !params.player.invulnerable) {
+        params.player.killed()
+        sound.gunshot.play()
       }
-      for (let zombie of zombies) {
+      for (let zombie of params.zombies) {
         if (soldier.touches(zombie)) {
           sound.gunshot.play()
           zombie.sprite.remove()
-          zombies.splice(zombies.indexOf(zombie), 1)
+          params.zombies.splice(params.zombies.indexOf(zombie), 1)
         }
       }
     }
 
-    for (let doctor of doctors) {
-      doctor.move(zombies)
+    for (let doctor of params.doctors) {
+      doctor.move(params.zombies)
       doctor.display()
-      for (let zombie of zombies) {
+      for (let zombie of params.zombies) {
         if (!doctor.waiting && doctor.touches(zombie)) {
           doctor.wait()
           sound.heal.play()
           zombie.sprite.remove()
-          humans.push(new Human(p, zombie.x, zombie.y))
-          zombies.splice(zombies.indexOf(zombie), 1)
+          params.humans.push(new Human(p, zombie.x, zombie.y))
+          params.zombies.splice(params.zombies.indexOf(zombie), 1)
         }
       }
     }
 
     // Check for new round
-    if (humans.length === 0) {
+    if (params.humans.length === 0) {
+      sound.bell.play()
       resetLevel()
     }
 
@@ -193,47 +199,77 @@ new p5(p => {
     // we need to debounce or something
     if (p.kb.pressed('p') || p.kb.pressed(' ')) {
       if (params.mode === gameMode.PLAYING) pauseGame()
-      else if (params.mode === gameMode.PAUSED)  unpauseGame()
-    }
-    else if (params.mode === gameMode.GAME_OVER) {
+      else if (params.mode === gameMode.PAUSED) unpauseGame()
+    } else if (p.kb.pressed('h')) {
+      if (params.mode === gameMode.HELP) {
+        params.mode = params.previousMode
+        removeHelp()
+      } else {
+        params.previousMode = params.mode
+        params.mode = gameMode.HELP
+        params.painted = false
+      }
+    } else if (params.mode === gameMode.GAME_OVER) {
       startGame()
-    } else if (params.mode === gameMode.HELP) {
-      params.mode = gameMode.ATTRACT
     }
   }
 
-  // p.keyTyped = () => {
-  //   handleKeyInput()
-  // }
-
-  // p.keyPressed = () => {
-  //   handleKeyInput()
-  // }
-
   const pauseGame = () => {
     params.mode = gameMode.PAUSED
-    console.log('PAUSED')
   }
 
   const unpauseGame = () => {
     params.mode = gameMode.PLAYING
     params.painted = false
-    console.log('UNPAUSED')
+  }
+
+  const hideGameObjects = () => {
+    params.gameObjs.forEach(objs => objs.forEach(o => o.sprite.visible = false))
+    params.player.sprite.visible = false
+  }
+
+  const showGameObjects = () => {
+    params.gameObjs.forEach(objs => objs.forEach(o => o.sprite.visible = true))
+    params.player.sprite.visible = true
   }
 
   const displayHelp = () => {
-    let objs = [humans, zombies, doctors, soldiers]
-    for (const arr of objs) {
-      for (const p of arr) {
-        p.sprite.visible = false
-      }
-    }
+    hideGameObjects()
 
-    p.background(0)
-    p.fill(255)
+    p.clear()
+    p.background(220)
+    p.fill(0)
     p.textSize(32)
     p.textAlign(p.CENTER)
     p.text('Help', p.width / 2, p.height / 2)
+
+    let h = new Human(p, 100, 100)
+    let s = new Soldier(p, 100, 130)
+    let z = new Zombie(p, 100, 160)
+    let d = new Doctor(p, 100, 190)
+    let pl = new Player(p, 100, 220)
+    pl.display()
+
+    helpObjs = [h, s, z, d, pl]
+
+    p.textAlign(p.LEFT)
+    p.textSize(16)
+
+    p.text('Human: tasty!', 130, 105)
+    p.text('Soldier: beware!', 130, 135)
+    p.text('Zombie: your babies! (you can ignore them now)', 130, 165)
+    p.text('Doctor: No worries, but heals zombies back to life', 130, 195)
+    p.text('Player: Move with arrow keys, bite humans, avoid soldiers', 130, 225)
+
+    params.painted = true
+  }
+
+  const removeHelp = () => {
+    helpObjs.forEach(o => o.sprite?.remove())
+    helpObjs = []
+    
+    showGameObjects()
+    params.painted = false
   }
 
   p.draw = () => {
@@ -267,7 +303,6 @@ new p5(p => {
       return
     }
     if (params.mode === gameMode.HELP && !params.painted) {
-      params.painted = true
       displayHelp()
       return
     }

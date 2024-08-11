@@ -33,6 +33,10 @@ Bite (Cartoon Style) by Jofae -- https://freesound.org/s/353067/ -- License: Cre
 
 Nom Noise by TheDragonsSpark -- https://freesound.org/s/543386/ -- License: Attribution 4.0
 
+nom ! by chestnutjam -- https://freesound.org/s/399289/ -- License: Creative Commons 0
+
+Sound Effect by <a href="https://pixabay.com/users/fredchaferfrommedia-29969733/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=120135">James White</a> from <a href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=120135">Pixabay</a>
+
 
 ## uses P5.js-vite Starter Template 🚀
 
