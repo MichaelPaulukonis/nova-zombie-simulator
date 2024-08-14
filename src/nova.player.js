@@ -1,7 +1,7 @@
 import Mobile from './nova.mobile.js'
 
 export default class Player extends Mobile {
-  constructor (ctx, x, y, livesMax) {
+  constructor (ctx, x, y, livesMax, imgs) {
     super(ctx, x, y, null, null) // hunh, what will Mobile do now ....
     this.livesMax = livesMax
     this.reset()
@@ -9,11 +9,23 @@ export default class Player extends Mobile {
     this.y = y || this.y
 
     this.sprites = {
-      normal: '🐲',
-      invulnerable: '🤑'
+      normal: imgs.normal,
+      invulnerable: imgs.invuln
     }
 
-    this.sprite.image = this.sprites.normal
+    this.setSprite(this.sprites.normal)
+    // this.sprite.diameter = 20
+    // this.sprite.image = this.sprites.normal
+    // this.sprite.image.width = 20
+    // this.sprite.image.height = 20
+    // this.sprite.debug = true
+  }
+
+  setSprite (img) {
+    this.sprite.image = img
+    // this.sprite.diameter = 20
+    this.sprite.image.width = 20
+    this.sprite.image.height = 20
   }
 
   reset () {
@@ -39,10 +51,12 @@ export default class Player extends Mobile {
   killed () {
     this.lives--
     this.invulnerable = true
-    this.sprite.image = this.sprites.invulnerable
+    // this.sprite.image = this.sprites.invulnerable
+    this.setSprite(this.sprites.invulnerable)
 
     setTimeout(() => {
-      this.sprite.image = this.sprites.normal
+      // this.sprite.image = this.sprites.normal
+      this.setSprite(this.sprites.normal)
       this.invulnerable = false
     }, 2000)
   }

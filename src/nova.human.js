@@ -22,7 +22,7 @@ export default class Human extends Mobile {
     if (this.y > this.ctx.height) this.y = 0
 
     // Avoid player and zombies
-    for (let zombie of zombies) {
+    for (let zombie of zombies.filter(z => !z.killed)) {
       if (this.ctx.dist(this.x, this.y, zombie.x, zombie.y) < 50) {
         this.x += (this.x - zombie.x) * 0.05
         this.y += (this.y - zombie.y) * 0.05

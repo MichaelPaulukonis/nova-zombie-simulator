@@ -11,9 +11,15 @@ import Doctor from './nova.doctor.js'
 
 let sound = {}
 let helpObjs = []
+let images = {}
 
 new p5(p => {
   p.preload = () => {
+    images.player = { 
+      normal: p.loadImage('images/u1f635_u1f922.png'),
+      invuln: p.loadImage('images/u1fae5_u1f922.png')
+    }
+
     sound.scream = p.loadSound('audio/64940__syna-max__wilhelm_scream.wav')
     sound.gunshot = p.loadSound('audio/128297__xenonn__layered-gunshot-7.wav')
     sound.crunch = p.loadSound('audio/524609__clearwavsound__bone-crunch.wav')
@@ -44,7 +50,7 @@ new p5(p => {
     zombies: [],
     doctors: [],
     soldiers: [],
-    player: null,
+    player: {},
     gameObjs: [],
     doctorLimit: 1,
     humanLimit: 12,
@@ -81,7 +87,10 @@ new p5(p => {
     params.level = 0
     params.score = 0
     resetLevel()
-    params.player = new Player(p, null, null, params.livesMax)
+    if (params.player.sprite) {
+      params.player.sprite.remove()
+    }
+    params.player = new Player(p, null, null, params.livesMax, images.player)
     params.mode = gameMode.PLAYING
     if (sound.thing) {
       sound.thing.setVolume(1.0)
@@ -142,11 +151,10 @@ new p5(p => {
         params.player.killed()
         sound.gunshot.play()
       }
-      for (let zombie of params.zombies) {
+      for (let zombie of params.zombies.filter(z => !z.killed)) {
         if (soldier.touches(zombie)) {
           sound.gunshot.play()
-          zombie.sprite.remove()
-          params.zombies.splice(params.zombies.indexOf(zombie), 1)
+          zombie.kill()
         }
       }
     }
@@ -154,7 +162,7 @@ new p5(p => {
     for (let doctor of params.doctors) {
       doctor.move(params.zombies)
       doctor.display()
-      for (let zombie of params.zombies) {
+      for (let zombie of params.zombies.filter(z => !z.killed)) {
         if (!doctor.waiting && doctor.touches(zombie)) {
           doctor.wait()
           sound.heal.play()
@@ -243,23 +251,29 @@ new p5(p => {
     p.textAlign(p.CENTER)
     p.text('Help', p.width / 2, p.height / 2)
 
-    let h = new Human(p, 100, 100)
-    let s = new Soldier(p, 100, 130)
-    let z = new Zombie(p, 100, 160)
-    let d = new Doctor(p, 100, 190)
-    let pl = new Player(p, 100, 220)
-    pl.display()
+    let h = new Human(p, 70,100)
+    let s = new Soldier(p, 70,130)
+    let z = new Zombie(p, 70,160)
+    let d = new Doctor(p, 70,190)
+    let pl = new Player(p, 70,220, 3, images.player)
+    let plInv = new Player(p, 70,250, 3, images.player)
+    plInv.invulnerable = true
+    plInv.setSprite(plInv.sprites.invulnerable)
 
-    helpObjs = [h, s, z, d, pl]
+    pl.display()
+    plInv.display()
+
+    helpObjs = [h, s, z, d, pl, plInv]
 
     p.textAlign(p.LEFT)
     p.textSize(16)
 
-    p.text('Human: tasty!', 130, 105)
-    p.text('Soldier: beware!', 130, 135)
-    p.text('Zombie: your babies! (you can ignore them now)', 130, 165)
-    p.text('Doctor: No worries, but heals zombies back to life', 130, 195)
-    p.text('Player: Move with arrow keys, bite humans, avoid soldiers', 130, 225)
+    p.text('Human: tasty!', 100, 105)
+    p.text('Soldier: beware!', 100, 135)
+    p.text('Zombie: your babies! (you can ignore them now)', 100, 165)
+    p.text('Doctor: No worries, but heals zombies back to life', 100, 195)
+    p.text('Player: Move with arrow keys, bite humans, avoid soldiers', 100, 225)
+    p.text('Player: after being shot and returning to un-life, you are briefly invulnerable', 100, 255, 300)
 
     params.painted = true
   }

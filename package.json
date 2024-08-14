@@ -6,7 +6,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "DEPLOY_ENV=GH_PAGES gh-pages -d dist",
+    "deploy": "DEPLOY_ENV=GH_PAGES gh-pages --nojekyll -d dist",
     "publish": "npm run deploy"
   },
   "devDependencies": {

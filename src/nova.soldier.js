@@ -28,7 +28,7 @@ export default class Soldier extends Mobile {
     }
 
     // Move towards a zombie
-    for (let zombie of zombies) {
+    for (let zombie of zombies.filter(z => !z.killed)) {
       if (this.proximityTo(zombie) < 200) {
         let angle = this.ctx.atan2(this.y - zombie.y, this.x - zombie.x)
         this.x -= this.ctx.cos(angle) * 2

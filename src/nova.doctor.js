@@ -19,7 +19,7 @@ export default class Doctor extends Mobile {
     const targetDistance = 100
 
     // move towards a zombie
-    for (let zombie of zombies) {
+    for (let zombie of zombies.filter(z => !z.killed)) {
       if (this.proximityTo(zombie) < 100) {
         let angle = this.ctx.atan2(this.y - zombie.y, this.x - zombie.x)
         this.x -= this.ctx.cos(angle) * 5

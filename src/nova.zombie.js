@@ -4,16 +4,26 @@ export default class Zombie extends Mobile {
   constructor (ctx, x, y, speed, noiseSpeed) {
     super(ctx, x, y, speed, noiseSpeed)
 
-    this.sprite.text = '🤢'
-    this.sprite.textSize = 20
-    this.sprite.textColor = 'white'
-    this.sprite.color = 'blue'
+    this.sprites = {
+      normal: '🤢',
+      dead: '🪦'
+    }
+
+    this.sprite.image = this.sprites.normal
+    this.killed = false
 
     return this
   }
 
+  kill() {
+    this.killed = true
+    this.sprite.image = this.sprites.dead
+  }
+
   // something like "world" would be a better reference....
   move (soldiers, humans, doctors) {
+    if (this.killed) return
+
     super.move()
 
     // Avoid soldiers
