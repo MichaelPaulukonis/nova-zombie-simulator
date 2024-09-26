@@ -3,7 +3,7 @@ import Mobile from './nova.mobile.js'
 export default class Human extends Mobile {
   constructor (ctx, x, y, speed, noiseSpeed) {
     super(ctx, x, y, speed, noiseSpeed)
-
+    
     this.sprite.image = '😃'
   }
 

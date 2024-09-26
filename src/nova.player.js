@@ -7,23 +7,18 @@ export default class Player extends Mobile {
     this.reset()
     this.x = x || this.x
     this.y = y || this.y
-
+    this.invulnerable = false
+    
     this.sprites = {
       normal: imgs.normal,
       invulnerable: imgs.invuln
     }
 
     this.setSprite(this.sprites.normal)
-    // this.sprite.diameter = 20
-    // this.sprite.image = this.sprites.normal
-    // this.sprite.image.width = 20
-    // this.sprite.image.height = 20
-    // this.sprite.debug = true
   }
 
   setSprite (img) {
     this.sprite.image = img
-    // this.sprite.diameter = 20
     this.sprite.image.width = 20
     this.sprite.image.height = 20
   }

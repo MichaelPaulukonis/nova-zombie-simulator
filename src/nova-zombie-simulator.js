@@ -12,6 +12,17 @@ import Doctor from './nova.doctor.js'
 let sound = {}
 let helpObjs = []
 let images = {}
+let displayFont = {}
+const emojiFont = 'Arial'
+
+// https://stackoverflow.com/a/67295678/41153
+// a custom 'sleep' or wait' function, that returns a Promise that resolves only after a timeout
+function sleep(millisecondsDuration)
+{
+  return new Promise((resolve) => {
+    setTimeout(resolve, millisecondsDuration);
+  })
+}
 
 new p5(p => {
   p.preload = () => {
@@ -19,6 +30,8 @@ new p5(p => {
       normal: p.loadImage('images/u1f635_u1f922.png'),
       invuln: p.loadImage('images/u1fae5_u1f922.png')
     }
+
+    displayFont = p.loadFont('/fonts/CharriotDeluxe.ttf');
 
     sound.scream = p.loadSound('audio/64940__syna-max__wilhelm_scream.wav')
     sound.gunshot = p.loadSound('audio/128297__xenonn__layered-gunshot-7.wav')
@@ -34,6 +47,7 @@ new p5(p => {
   const gameMode = {
     HELP: 'help',
     PLAYING: 'playing',
+    ROUND_OVER: 'round over',
     PAUSED: 'paused',
     GAME_OVER: 'game over',
     ATTRACT: 'attract'
@@ -81,6 +95,7 @@ new p5(p => {
       params.humanLimit += 2
     }
     params.gameObjs = [params.humans, params.zombies, params.doctors, params.soldiers]
+    params.mode = gameMode.PLAYING
   }
 
   function startGame () {
@@ -100,16 +115,22 @@ new p5(p => {
 
   function displayScore () {
     p.fill(0)
-    p.textSize(24)
+    p.textSize(12)
     p.textAlign(p.LEFT)
+    p.textFont(displayFont)
     p.text('Score: ' + params.score, 10, 30)
-    p.text('Round: ' + params.level, 10, 60)
-    p.text(`Lives: ${params.player.lives}`, 10, 90)
+    p.text('Round: ' + params.level, 10, 40)
+    p.text(`Lives: ${params.player.lives}`, 10, 50)
+    p.text(`Humans: ${params.humans.length}`, 10, 60)
+    p.text(`Zombies: ${params.zombies.length}`, 10, 70)
+
+    p.textFont(emojiFont)
   }
 
-  function playloop () {
+  async function playloop () {
     params.painted = false
     p.background(220)
+    p.textFont(emojiFont)
     params.player.move()
     params.player.display() // needed until x/y directly references sprite
 
@@ -174,8 +195,11 @@ new p5(p => {
     }
 
     // Check for new round
+    // TODO: pause briefly and say something?
     if (params.humans.length === 0) {
+      params.mode = gameMode.ROUND_OVER
       sound.bell.play()
+      await sleep(1000)
       resetLevel()
     }
 
@@ -187,6 +211,8 @@ new p5(p => {
     p.frameRate(30)
     p.noStroke()
     p.textStyle(p.BOLD)
+    // p.textFont(font);
+    p.textFont(emojiFont)
 
     let restartButton = p.createButton('Start')
     // canvas positions are different inside of the animate loop. hrm.
@@ -249,8 +275,8 @@ new p5(p => {
     p.fill(0)
     p.textSize(32)
     p.textAlign(p.CENTER)
-    p.text('Help', p.width / 2, p.height / 2)
 
+    p.textFont(emojiFont)
     let h = new Human(p, 70,100)
     let s = new Soldier(p, 70,130)
     let z = new Zombie(p, 70,160)
@@ -267,13 +293,15 @@ new p5(p => {
 
     p.textAlign(p.LEFT)
     p.textSize(16)
-
+    
+    p.textFont(displayFont)
     p.text('Human: tasty!', 100, 105)
     p.text('Soldier: beware!', 100, 135)
     p.text('Zombie: your babies! (you can ignore them now)', 100, 165)
     p.text('Doctor: No worries, but heals zombies back to life', 100, 195)
     p.text('Player: Move with arrow keys, bite humans, avoid soldiers', 100, 225)
     p.text('Player: after being shot and returning to un-life, you are briefly invulnerable', 100, 255, 300)
+    p.textFont(emojiFont)
 
     params.painted = true
   }
@@ -288,13 +316,14 @@ new p5(p => {
 
   p.draw = () => {
     handleKeyInput()
+    // TODO: break out into functions or files
+
+    if (params.mode === gameMode.ROUND_OVER) {
+      return
+    }
+
     if (params.mode === gameMode.ATTRACT) {
-      p.background(0)
-      p.fill(255)
-      p.textSize(32)
-      p.textAlign(p.CENTER)
-      p.text('Nova Zombie Simulator', p.width / 2, p.height / 2)
-      p.text('Click to Start', p.width / 2, p.height / 2 + 50)
+      displayTitleScreen(p)
       return
     }
     if (params.mode === gameMode.PAUSED && !params.painted) {
@@ -303,8 +332,10 @@ new p5(p => {
       p.fill(255)
       p.textSize(32)
       p.textAlign(p.CENTER)
+      p.textFont(displayFont)
       p.text('Paused', p.width / 2, p.height / 2)
       p.text(`Press 'p' or 'space' to continue`, p.width / 2, p.height / 2 + 50)
+      p.textFont(emojiFont)
       return
     }
     if (params.mode === gameMode.GAME_OVER && !params.painted) {
@@ -313,6 +344,7 @@ new p5(p => {
       p.fill(255)
       p.textSize(32)
       p.textAlign(p.CENTER)
+      p.textFont(displayFont)
       p.text('Game Over', p.width / 2, p.height / 2)
       return
     }
@@ -326,3 +358,24 @@ new p5(p => {
     playloop()
   }
 })
+
+function displayTitleScreen(ctx) {
+  ctx.background(0)
+  ctx.textAlign(ctx.CENTER)
+  ctx.textFont(displayFont)
+  ctx.textSize(40)
+  ctx.textStyle(ctx.BOLD)
+
+  ctx.fill(ctx.random(255), ctx.random(255), ctx.random(255))
+  ctx.text('Nova Zombie Simulator', ctx.width / 2, ctx.height / 2 - 100)
+
+  ctx.textStyle(ctx.NORMAL)
+  ctx.fill(255)
+  ctx.textSize(32)
+  ctx.text('Click to Start', ctx.width / 2, ctx.height / 2 + 50)
+
+  ctx.textSize(18)
+  ctx.text('by Michael and Anthony Paulukonis', ctx.width / 2, ctx.height / 2 + 200)
+  ctx.textFont(emojiFont)
+}
+

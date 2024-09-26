@@ -7,7 +7,8 @@
     "preview": "vite preview",
     "predeploy": "npm run build",
     "deploy": "DEPLOY_ENV=GH_PAGES gh-pages --nojekyll -d dist",
-    "publish": "npm run deploy"
+    "publish": "npm run deploy",
+    "open": "/usr/bin/open -a \"/Applications/Google Chrome.app\" https://michaelpaulukonis.github.io/nova-zombie-simulator"
   },
   "devDependencies": {
     "gh-pages": "^6.1.1",

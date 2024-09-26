@@ -2,6 +2,11 @@
 
 A game in p5js designed by my son, coded by us
 
+## Roadmap
+
+- other graphics? This is more an Anthony concern, but he does love emojis
+- soldiers shoot bullets, not kill-on-contact
+- extra lives, mechanical tweaks
 
 ## p5Play
 
@@ -37,6 +42,12 @@ nom ! by chestnutjam -- https://freesound.org/s/399289/ -- License: Creative Com
 
 Sound Effect by <a href="https://pixabay.com/users/fredchaferfrommedia-29969733/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=120135">James White</a> from <a href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=120135">Pixabay</a>
 
+
+## other resources
+
+- https://www.dafont.com/charriot-deluxe.font
+  - as seen @ https://glicpixxx.love/
+  
 
 ## uses P5.js-vite Starter Template 🚀
 
