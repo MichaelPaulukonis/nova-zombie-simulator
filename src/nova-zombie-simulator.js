@@ -31,7 +31,7 @@ new p5(p => {
       invuln: p.loadImage('images/u1fae5_u1f922.png')
     }
 
-    displayFont = p.loadFont('/fonts/CharriotDeluxe.ttf');
+    displayFont = p.loadFont('fonts/CharriotDeluxe.ttf');
 
     sound.scream = p.loadSound('audio/64940__syna-max__wilhelm_scream.wav')
     sound.gunshot = p.loadSound('audio/128297__xenonn__layered-gunshot-7.wav')
