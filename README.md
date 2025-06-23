@@ -7,6 +7,15 @@ A game in p5js designed by my son, coded by us
 - other graphics? This is more an Anthony concern, but he does love emojis
 - soldiers shoot bullets, not kill-on-contact
 - extra lives, mechanical tweaks
+- power-packs that give temporary invulnerability
+- better help screen
+  - keys, invuln when starting
+  - doctors sleep after heal
+- more visual on things
+  - invulnerability period
+  - sleeping doctors
+  - bullets for soldiers?
+  
 
 ## p5Play
 

@@ -44,10 +44,14 @@ new p5(p => {
     sound.bell = p.loadSound('audio/taco-bell-bong-sfx-120135.mp3')
   }
 
+  // other modes?
+  // when you die?
+  
   const gameMode = {
     HELP: 'help',
     PLAYING: 'playing',
     ROUND_OVER: 'round over',
+
     PAUSED: 'paused',
     GAME_OVER: 'game over',
     ATTRACT: 'attract'

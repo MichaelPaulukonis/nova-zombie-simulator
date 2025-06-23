@@ -1,5 +1,5 @@
 {
-  "name": "p5js-vite",
+  "name": "nova-zombie-simulator",
   "version": "0.1.0",
   "scripts": {
     "dev": "vite",
