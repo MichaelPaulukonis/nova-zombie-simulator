@@ -69,10 +69,10 @@ This is an unopinionated template; aside from P5.js and Vite, the rest of your p
 
 ## npm scripts
 
-- `npm run dev` - Starts the development server at port [3000](http://localhost:3000/)
+- `npm run dev` - Starts the development server at port [5173](http://localhost:5173/) (automatically finds next available port if busy)
 - `npm run build` - Builds the application in a `dist` folder
-- `npm run preview` - Serves the build files (`dist` folder) locally at port [5000](http://localhost:3000/)
+- `npm run preview` - Serves the build files (`dist` folder) locally at port [4173](http://localhost:4173/)
 
 Note that if after this last command you do not see anything, you can use instead this other command:
 
-- `npm run preview --host` - You should then be able to see your files locally at port [5000](http://localhost:3000/)
+- `npm run preview --host` - You should then be able to see your files locally at port [4173](http://localhost:4173/)
