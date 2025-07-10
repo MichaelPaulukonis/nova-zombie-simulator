@@ -211,7 +211,13 @@ new p5(p => {
   }
 
   p.setup = () => {
+    // Create a container div for the game
+    let gameContainer = p.createDiv('')
+    gameContainer.id('game-container')
+    
     let canvas = p.createCanvas(600, 600)
+    canvas.parent(gameContainer)
+    
     p.frameRate(30)
     p.noStroke()
     p.textStyle(p.BOLD)
@@ -219,11 +225,7 @@ new p5(p => {
     p.textFont(emojiFont)
 
     let restartButton = p.createButton('Start')
-    // canvas positions are different inside of the animate loop. hrm.
-    restartButton.position(
-      canvas.offsetLeft,
-      canvas.offsetTop + canvas.offsetHeight + 10
-    )
+    restartButton.parent(gameContainer)
     restartButton.mousePressed(startGame)
   }
 
