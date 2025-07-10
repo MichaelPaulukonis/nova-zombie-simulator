@@ -15,6 +15,23 @@
 - **Plans and Refactor Documentation:**  
   Save all refactor plans, implementation outlines, and significant design changes in `docs/plans/` (e.g., `docs/plans/game-entity-refactor.md`).  
   - When a plan changes during implementation, append the reasons and changes to the same markdown file; do not erase the original plan.
+  - **Plan File Naming**: Use consistent naming for project plan files in `docs/plans/`:
+   ```
+   Format: NN.semantic-name.md
+   
+   Examples:
+   - 01.mvp-completion-summary.md
+   - 02.e2e-testing-setup.md
+   - 03.monolithic-implementation.md
+   - 04.phase-assessment-next-steps.md
+   
+   Rules:
+   - Two-digit prefix (01-99) for ordering
+   - Dot separator after number
+   - Kebab-case for semantic name
+   - .md extension
+   - Sequential numbering for chronological order
+   ```
 
 # Copilot Guidance
 
