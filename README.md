@@ -1,6 +1,9 @@
 # NOVA ZOMBIE SIMULATOR
 
-A game in p5js designed by my son, coded by us
+A game in p5js designed by my son, coded by us (with LLM assists)
+
+![a screenshot of Nova Zombie Simulator play](./docs/nvs_screenshot.00.png)
+
 
 ## Roadmap
 
@@ -15,7 +18,8 @@ A game in p5js designed by my son, coded by us
   - invulnerability period
   - sleeping doctors
   - bullets for soldiers?
-  
+- dark playfield instead of light?
+  - I like the title screen better than the playscreen hah hah hah
 
 ## p5Play
 
@@ -63,16 +67,3 @@ Sound Effect by <a href="https://pixabay.com/users/fredchaferfrommedia-29969733/
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 [Vite](https://vitejs.dev/) starter template to scaffold a new [p5.js](https://p5js.org) project.
-
-This is an unopinionated template; aside from P5.js and Vite, the rest of your project's tools are entirely up to you.
-
-
-## npm scripts
-
-- `npm run dev` - Starts the development server at port [5173](http://localhost:5173/) (automatically finds next available port if busy)
-- `npm run build` - Builds the application in a `dist` folder
-- `npm run preview` - Serves the build files (`dist` folder) locally at port [4173](http://localhost:4173/)
-
-Note that if after this last command you do not see anything, you can use instead this other command:
-
-- `npm run preview --host` - You should then be able to see your files locally at port [4173](http://localhost:4173/)
