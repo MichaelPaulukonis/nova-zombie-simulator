@@ -265,12 +265,12 @@ new p5(p => {
 
   const hideGameObjects = () => {
     params.gameObjs.forEach(objs => objs.forEach(o => o.sprite.visible = false))
-    params.player.sprite.visible = false
+    if (params.player.sprite) params.player.sprite.visible = false
   }
 
   const showGameObjects = () => {
     params.gameObjs.forEach(objs => objs.forEach(o => o.sprite.visible = true))
-    params.player.sprite.visible = true
+    if (params.player.sprite) params.player.sprite.visible = true
   }
 
   const displayHelp = () => {
@@ -334,6 +334,8 @@ new p5(p => {
     }
     if (params.mode === gameMode.PAUSED && !params.painted) {
       params.painted = true
+      p.background(220)
+      displayScore()
       p.background(0, 50)
       p.fill(255)
       p.textSize(32)
@@ -346,6 +348,8 @@ new p5(p => {
     }
     if (params.mode === gameMode.GAME_OVER && !params.painted) {
       params.painted = true
+      p.background(220)
+      displayScore()
       p.background(0, 50)
       p.fill(255)
       p.textSize(32)
