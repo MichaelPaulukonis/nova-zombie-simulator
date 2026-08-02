@@ -26,6 +26,8 @@ export default class Player extends Mobile {
   reset () {
     this.x = this.ctx.width / 2
     this.y = this.ctx.height / 2
+    this.sprite.x = this.x
+    this.sprite.y = this.y
     this.lives = this.livesMax
     this.invulnerable = false
   }
