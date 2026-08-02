@@ -222,7 +222,7 @@ new Q5(p => {
     params.humans.overlaps(params.zombies, (human, zombie) => {
       const humanEntity = params.humanList.find(h => h.sprite === human)
       const zombieEntity = params.zombieList.find(z => z.sprite === zombie)
-      if (!humanEntity || zombieEntity.killed) return
+      if (!humanEntity || !zombieEntity || zombieEntity.killed) return
       sound.nomnom.play()
       humanEntity.sprite.delete()
       params.humanList.splice(params.humanList.indexOf(humanEntity), 1)
