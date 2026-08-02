@@ -920,6 +920,13 @@ git add css/style.css
 git commit -m "style: accommodate q5play attribution element in layout"
 ```
 
+**Outcome (2026-08-02):** No CSS change was needed. Reading `node_modules/q5play/q5play.js` directly (Step 1 above assumed browser inspection would be sufficient, but the element can't be triggered on `localhost` at all — see below) revealed:
+
+- `Q5Play.splashScreen()` (`q5play.js:330`) is a full-screen, self-contained, self-removing splash (`position:absolute; width:100%; height:100%; z-index:1000`, fully inline-styled), shown once for ~3 seconds on load, then it deletes its own DOM node. It is not a persistent corner badge coexisting with the game's layout, so no `css/style.css` rule is needed — it's already correctly self-styled and self-cleaning.
+- It's gated by hostname (`q5play.js:~7195`): explicitly skipped for `localhost`/`127.0.0.1` and a long allowlist of coding-playground domains, only firing in the `default:` branch (real production domains) — meaning it will appear on the eventual GH Pages deploy but can never be observed on the local dev server, so the original Step 1 (visual inspection via `npm run dev`) was not actually possible to carry out as written.
+
+Task closed with no commit — see `docs/plans/04.q5play-migration.md` §6 for the corrected design note.
+
 ---
 
 ## Task 10: Delete dead file
