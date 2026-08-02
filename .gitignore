@@ -4,6 +4,7 @@ dist
 dist-ssr
 *.local
 p5play.asteroids/
+.worktrees/
 
 # Logs
 logs
