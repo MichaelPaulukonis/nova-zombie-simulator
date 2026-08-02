@@ -1,12 +1,8 @@
 import Mobile from './nova.mobile.js'
 
 export default class Soldier extends Mobile {
-  constructor (ctx, x, y, speed, noiseSpeed) {
-    super(ctx, x, y, speed, noiseSpeed)
-
-    // mmmmm hrm
-    this.x = this.ctx.random(this.ctx.width)
-    this.y = this.ctx.random(this.ctx.height)
+  constructor (ctx, x, y, speed, noiseSpeed, group) {
+    super(ctx, x, y, speed, noiseSpeed, group)
 
     this.sprite.text = '✭'
     this.sprite.textSize = 20
@@ -17,18 +13,12 @@ export default class Soldier extends Mobile {
   move (player, zombies) {
     super.move()
 
-    // Move towards player
     if (this.proximityTo(player) < 200) {
-      let angle = this.ctx.atan2(player.y - this.y, player.x - this.x)
-      this.x += this.ctx.cos(angle) * 2
-      this.y += this.ctx.sin(angle) * 2
+      this.steerToward(player, 2)
     } else {
-      // Move towards a zombie
       for (let zombie of zombies.filter(z => !z.killed)) {
         if (this.proximityTo(zombie) < 200) {
-          let angle = this.ctx.atan2(this.y - zombie.y, this.x - zombie.x)
-          this.x -= this.ctx.cos(angle) * 2
-          this.y -= this.ctx.sin(angle) * 2
+          this.steerToward(zombie, 2)
           break
         }
       }
