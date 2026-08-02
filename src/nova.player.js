@@ -19,8 +19,7 @@ export default class Player extends Mobile {
 
   setSprite (img) {
     this.sprite.image = img
-    this.sprite.image.width = 20
-    this.sprite.image.height = 20
+    this.sprite.image.scale = 20 / img.defaultWidth
   }
 
   reset () {
