@@ -8,7 +8,6 @@ import Human from './nova.human.js'
 import Doctor from './nova.doctor.js'
 
 let sound = {}
-let helpObjs = []
 let images = {}
 let displayFont = {}
 const emojiFont = 'Arial'
@@ -62,41 +61,50 @@ new Q5(p => {
     level: 0,
     livesMax: 3,
     painted: false,
-    humans: [],
-    zombies: [],
-    doctors: [],
-    soldiers: [],
+    humans: null,
+    zombies: null,
+    doctors: null,
+    soldiers: null,
     player: {},
-    gameObjs: [],
     doctorLimit: 1,
     humanLimit: 12,
     soldierLimit: 2,
-    helpObjs: []
+    humanList: [],
+    zombieList: [],
+    soldierList: [],
+    doctorList: []
   }
 
   function resetLevel () {
-    params.gameObjs = [params.humans, params.zombies, params.doctors, params.soldiers]
-    params.gameObjs.forEach(objs => objs.forEach(o => o.sprite.remove()))
+    // q5play Group#deleteAll() actually deletes each sprite (physics body +
+    // membership in every group) — Group#removeAll() only detaches sprites
+    // from THIS group without deleting them, which would leak sprites into
+    // the world. Verified against node_modules/q5play/q5play.js (removeAll
+    // is `this.splice(0, this.length)`; deleteAll calls `.at(-1).delete()`
+    // per sprite). deleteAll() is what the original manual
+    // `o.sprite.remove()` loop was trying to achieve.
+    const groups = [params.humans, params.zombies, params.doctors, params.soldiers]
+    groups.forEach(group => group.deleteAll())
 
-    params.humans = []
-    params.zombies = []
-    params.soldiers = []
-    params.doctors = []
+    params.humanList = []
+    params.zombieList = []
+    params.soldierList = []
+    params.doctorList = []
+
     for (let i = 0; i < params.humanLimit; i++) {
-      params.humans.push(new Human(p, null, null))
+      params.humanList.push(new Human(p, null, null, undefined, undefined, params.humans))
     }
     for (let i = 0; i < params.soldierLimit; i++) {
-      params.soldiers.push(new Soldier(p, null, null, -2.5, 0.02))
+      params.soldierList.push(new Soldier(p, null, null, -2.5, 0.02, params.soldiers))
     }
     for (let i = 0; i < params.doctorLimit; i++) {
-      params.doctors.push(new Doctor(p, null, null, -2.5, 0.001))
+      params.doctorList.push(new Doctor(p, null, null, -2.5, 0.001, params.doctors))
     }
     params.level++
     if (params.level % 2 === 0) {
       params.soldierLimit++
       params.humanLimit += 2
     }
-    params.gameObjs = [params.humans, params.zombies, params.doctors, params.soldiers]
     params.mode = gameMode.PLAYING
   }
 
@@ -105,13 +113,31 @@ new Q5(p => {
     params.score = 0
     resetLevel()
     if (params.player.sprite) {
-      params.player.sprite.remove()
+      params.player.sprite.delete()
     }
     params.player = new Player(p, null, null, params.livesMax, images.player)
+
+    params.player.sprite.overlaps(params.humans, (playerSprite, human) => {
+      const humanEntity = params.humanList.find(h => h.sprite === human)
+      if (!humanEntity) return
+      sound.bite.play()
+      humanEntity.sprite.delete()
+      params.humanList.splice(params.humanList.indexOf(humanEntity), 1)
+      params.zombieList.push(new Zombie(p, humanEntity.x, humanEntity.y, undefined, undefined, params.zombies))
+      params.score++
+    })
+
+    params.player.sprite.overlaps(params.soldiers, (playerSprite, soldier) => {
+      if (params.player.invulnerable) return
+      params.player.killed()
+      sound.gunshot.play()
+    })
+
     params.mode = gameMode.PLAYING
     if (sound.thing) {
       sound.thing.setVolume(1.0)
-      sound.thing.loop()
+      sound.thing.loop = true
+      sound.thing.play()
     }
   }
 
@@ -123,8 +149,8 @@ new Q5(p => {
     p.text('Score: ' + params.score, 10, 30)
     p.text('Round: ' + params.level, 10, 40)
     p.text(`Lives: ${params.player.lives}`, 10, 50)
-    p.text(`Humans: ${params.humans.length}`, 10, 60)
-    p.text(`Zombies: ${params.zombies.length}`, 10, 70)
+    p.text(`Humans: ${params.humanList.length}`, 10, 60)
+    p.text(`Zombies: ${params.zombieList.length}`, 10, 70)
 
     p.textFont(emojiFont)
   }
@@ -142,63 +168,29 @@ new Q5(p => {
       return
     }
 
-    for (let human of params.humans) {
-      human.move(params.zombies, params.player)
+    for (let human of params.humanList) {
+      human.move(params.zombieList, params.player)
       human.display()
-      if (params.player.touches(human)) {
-        sound.bite.play()
-        human.sprite.remove()
-        params.zombies.push(new Zombie(p, human.x, human.y))
-        params.humans.splice(params.humans.indexOf(human), 1)
-        params.score++
-      }
     }
 
-    for (let zombie of params.zombies) {
-      zombie.move(params.soldiers, params.humans, params.doctors)
+    for (let zombie of params.zombieList) {
+      zombie.move(params.soldierList, params.humanList, params.doctorList)
       zombie.display()
-      for (let human of params.humans) {
-        if (zombie.touches(human)) {
-          sound.nomnom.play()
-          human.sprite.remove()
-          params.zombies.push(new Zombie(p, human.x, human.y))
-          params.humans.splice(params.humans.indexOf(human), 1)
-        }
-      }
     }
 
-    for (let soldier of params.soldiers) {
-      soldier.move(params.player, params.zombies)
+    for (let soldier of params.soldierList) {
+      soldier.move(params.player, params.zombieList)
       soldier.display()
-      if (soldier.touches(params.player) && !params.player.invulnerable) {
-        params.player.killed()
-        sound.gunshot.play()
-      }
-      for (let zombie of params.zombies.filter(z => !z.killed)) {
-        if (soldier.touches(zombie)) {
-          sound.gunshot.play()
-          zombie.kill()
-        }
-      }
     }
 
-    for (let doctor of params.doctors) {
-      doctor.move(params.zombies)
+    for (let doctor of params.doctorList) {
+      doctor.move(params.zombieList)
       doctor.display()
-      for (let zombie of params.zombies.filter(z => !z.killed)) {
-        if (!doctor.waiting && doctor.touches(zombie)) {
-          doctor.wait()
-          sound.heal.play()
-          zombie.sprite.remove()
-          params.humans.push(new Human(p, zombie.x, zombie.y))
-          params.zombies.splice(params.zombies.indexOf(zombie), 1)
-        }
-      }
     }
 
     // Check for new round
     // TODO: pause briefly and say something?
-    if (params.humans.length === 0) {
+    if (params.humanList.length === 0) {
       params.mode = gameMode.ROUND_OVER
       sound.bell.play()
       await sleep(1000)
@@ -211,7 +203,7 @@ new Q5(p => {
   p.setup = () => {
     // Create a container div for the game
     let gameContainer = p.createDiv('')
-    gameContainer.id('game-container')
+    gameContainer.id = 'game-container'
     
     let canvas = p.createCanvas(600, 600)
     canvas.parent(gameContainer)
@@ -221,6 +213,41 @@ new Q5(p => {
     p.textStyle(p.BOLD)
     // p.textFont(font);
     p.textFont(emojiFont)
+
+    params.humans = new p.Group()
+    params.zombies = new p.Group()
+    params.doctors = new p.Group()
+    params.soldiers = new p.Group()
+
+    params.humans.overlaps(params.zombies, (human, zombie) => {
+      const humanEntity = params.humanList.find(h => h.sprite === human)
+      const zombieEntity = params.zombieList.find(z => z.sprite === zombie)
+      if (!humanEntity || zombieEntity.killed) return
+      sound.nomnom.play()
+      humanEntity.sprite.delete()
+      params.humanList.splice(params.humanList.indexOf(humanEntity), 1)
+      params.zombieList.push(new Zombie(p, humanEntity.x, humanEntity.y, undefined, undefined, params.zombies))
+    })
+
+    params.soldiers.overlaps(params.zombies, (soldier, zombie) => {
+      const zombieEntity = params.zombieList.find(z => z.sprite === zombie)
+      if (!zombieEntity || zombieEntity.killed) return
+      sound.gunshot.play()
+      zombieEntity.kill()
+      params.zombieList.splice(params.zombieList.indexOf(zombieEntity), 1)
+      zombieEntity.sprite.delete()
+    })
+
+    params.doctors.overlaps(params.zombies, (doctor, zombie) => {
+      const doctorEntity = params.doctorList.find(d => d.sprite === doctor)
+      const zombieEntity = params.zombieList.find(z => z.sprite === zombie)
+      if (!doctorEntity || !zombieEntity || zombieEntity.killed || doctorEntity.waiting) return
+      doctorEntity.wait()
+      sound.heal.play()
+      zombieEntity.sprite.delete()
+      params.zombieList.splice(params.zombieList.indexOf(zombieEntity), 1)
+      params.humanList.push(new Human(p, zombieEntity.x, zombieEntity.y, undefined, undefined, params.humans))
+    })
 
     let restartButton = p.createButton('Start')
     restartButton.parent(gameContainer)
@@ -235,10 +262,10 @@ new Q5(p => {
 
   function handleKeyInput () {
     // we need to debounce or something
-    if (p.kb.pressed('p') || p.kb.pressed(' ')) {
+    if (p.kb.presses('p') || p.kb.presses(' ')) {
       if (params.mode === gameMode.PLAYING) pauseGame()
       else if (params.mode === gameMode.PAUSED) unpauseGame()
-    } else if (p.kb.pressed('h')) {
+    } else if (p.kb.presses('h')) {
       if (params.mode === gameMode.HELP) {
         params.mode = params.previousMode
         removeHelp()
@@ -262,12 +289,14 @@ new Q5(p => {
   }
 
   const hideGameObjects = () => {
-    params.gameObjs.forEach(objs => objs.forEach(o => o.sprite.visible = false))
+    [params.humanList, params.zombieList, params.doctorList, params.soldierList]
+      .forEach(list => list.forEach(o => (o.sprite.visible = false)))
     if (params.player.sprite) params.player.sprite.visible = false
   }
 
   const showGameObjects = () => {
-    params.gameObjs.forEach(objs => objs.forEach(o => o.sprite.visible = true))
+    [params.humanList, params.zombieList, params.doctorList, params.soldierList]
+      .forEach(list => list.forEach(o => (o.sprite.visible = true)))
     if (params.player.sprite) params.player.sprite.visible = true
   }
 
@@ -279,25 +308,18 @@ new Q5(p => {
     p.fill(0)
     p.textSize(32)
     p.textAlign(p.CENTER)
-
     p.textFont(emojiFont)
-    let h = new Human(p, 70,100)
-    let s = new Soldier(p, 70,130)
-    let z = new Zombie(p, 70,160)
-    let d = new Doctor(p, 70,190)
-    let pl = new Player(p, 70,220, 3, images.player)
-    let plInv = new Player(p, 70,250, 3, images.player)
-    plInv.invulnerable = true
-    plInv.setSprite(plInv.sprites.invulnerable)
 
-    pl.display()
-    plInv.display()
-
-    helpObjs = [h, s, z, d, pl, plInv]
+    p.text('😃', 70, 100)
+    p.text('✭', 70, 130)
+    p.text('🤢', 70, 160)
+    p.text('⛑', 70, 190)
+    p.text('🥵', 70, 220)
+    p.text('🥵', 70, 250)
 
     p.textAlign(p.LEFT)
     p.textSize(16)
-    
+
     p.textFont(displayFont)
     p.text('Human: tasty!', 100, 105)
     p.text('Soldier: beware!', 100, 135)
@@ -311,9 +333,6 @@ new Q5(p => {
   }
 
   const removeHelp = () => {
-    helpObjs.forEach(o => o.sprite?.remove())
-    helpObjs = []
-    
     showGameObjects()
     params.painted = false
   }
@@ -330,8 +349,7 @@ new Q5(p => {
       displayTitleScreen(p)
       return
     }
-    if (params.mode === gameMode.PAUSED && !params.painted) {
-      params.painted = true
+    if (params.mode === gameMode.PAUSED) {
       p.background(220)
       displayScore()
       p.background(0, 50)
@@ -344,8 +362,7 @@ new Q5(p => {
       p.textFont(emojiFont)
       return
     }
-    if (params.mode === gameMode.GAME_OVER && !params.painted) {
-      params.painted = true
+    if (params.mode === gameMode.GAME_OVER) {
       p.background(220)
       displayScore()
       p.background(0, 50)
@@ -356,7 +373,7 @@ new Q5(p => {
       p.text('Game Over', p.width / 2, p.height / 2)
       return
     }
-    if (params.mode === gameMode.HELP && !params.painted) {
+    if (params.mode === gameMode.HELP) {
       displayHelp()
       return
     }
