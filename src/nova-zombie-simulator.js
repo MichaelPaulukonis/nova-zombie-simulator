@@ -1,7 +1,5 @@
-await import('p5js-wrapper')
-window.planck = await import('planck')
-await import('p5play')
-await import('p5js-wrapper/sound')
+await import('q5')
+await import('q5play')
 
 import Player from './nova.player.js'
 import Soldier from './nova.soldier.js'
@@ -24,7 +22,7 @@ function sleep(millisecondsDuration)
   })
 }
 
-new p5(p => {
+new Q5(p => {
   p.preload = () => {
     images.player = { 
       normal: p.loadImage('images/u1f635_u1f922.png'),
