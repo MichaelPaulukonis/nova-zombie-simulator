@@ -1,14 +1,14 @@
 import Mobile from './nova.mobile.js'
 
 export default class Player extends Mobile {
-  constructor (ctx, x, y, livesMax, imgs) {
-    super(ctx, x, y, null, null) // hunh, what will Mobile do now ....
+  constructor (ctx, x, y, livesMax, imgs, group) {
+    super(ctx, x, y, null, null, group)
     this.livesMax = livesMax
     this.reset()
     this.x = x || this.x
     this.y = y || this.y
     this.invulnerable = false
-    
+
     this.sprites = {
       normal: imgs.normal,
       invulnerable: imgs.invuln
@@ -31,26 +31,22 @@ export default class Player extends Mobile {
   }
 
   move () {
-    if (this.ctx.keyIsDown(this.ctx.LEFT_ARROW)) this.x -= 5
-    if (this.ctx.keyIsDown(this.ctx.RIGHT_ARROW)) this.x += 5
-    if (this.ctx.keyIsDown(this.ctx.UP_ARROW)) this.y -= 5
-    if (this.ctx.keyIsDown(this.ctx.DOWN_ARROW)) this.y += 5
+    let dx = 0
+    let dy = 0
+    if (this.ctx.kb.pressing('left')) dx -= 5
+    if (this.ctx.kb.pressing('right')) dx += 5
+    if (this.ctx.kb.pressing('up')) dy -= 5
+    if (this.ctx.kb.pressing('down')) dy += 5
 
-    // Wrap-around logic
-    if (this.x < 0) this.x = this.ctx.width
-    if (this.x > this.ctx.width) this.x = 0
-    if (this.y < 0) this.y = this.ctx.height
-    if (this.y > this.ctx.height) this.y = 0
+    this.sprite.vel = { x: dx, y: dy }
   }
 
   killed () {
     this.lives--
     this.invulnerable = true
-    // this.sprite.image = this.sprites.invulnerable
     this.setSprite(this.sprites.invulnerable)
 
     setTimeout(() => {
-      // this.sprite.image = this.sprites.normal
       this.setSprite(this.sprites.normal)
       this.invulnerable = false
     }, 2000)
