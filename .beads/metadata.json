@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "nova_zombie_simulator",
+  "project_id": "b17d3e81-cfde-4334-a3b7-e373d91f3448"
+}
