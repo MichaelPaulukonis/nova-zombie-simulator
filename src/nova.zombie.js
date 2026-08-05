@@ -16,6 +16,10 @@ export default class Zombie extends Mobile {
   kill () {
     this.killed = true
     this.sprite.image = this.sprites.dead
+    // kinematic bodies keep integrating position from their last velocity
+    // every physics step regardless of move() - without this the tombstone
+    // drifts forever instead of staying put.
+    this.sprite.vel = { x: 0, y: 0 }
   }
 
   move (soldiers, humans, doctors) {

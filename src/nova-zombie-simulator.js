@@ -21,6 +21,10 @@ function sleep(millisecondsDuration)
   })
 }
 
+function findBySprite (list, sprite) {
+  return list.find(entity => entity.sprite === sprite)
+}
+
 new Q5(p => {
   p.preload = () => {
     images.player = { 
@@ -60,7 +64,6 @@ new Q5(p => {
     score: 0,
     level: 0,
     livesMax: 3,
-    painted: false,
     humans: null,
     zombies: null,
     doctors: null,
@@ -117,8 +120,8 @@ new Q5(p => {
     }
     params.player = new Player(p, null, null, params.livesMax, images.player)
 
-    params.player.sprite.overlaps(params.humans, (playerSprite, human) => {
-      const humanEntity = params.humanList.find(h => h.sprite === human)
+    params.player.sprite.overlaps(params.humans, (playerSprite, humanSprite) => {
+      const humanEntity = findBySprite(params.humanList, humanSprite)
       if (!humanEntity) return
       sound.bite.play()
       humanEntity.sprite.delete()
@@ -156,7 +159,6 @@ new Q5(p => {
   }
 
   async function playloop () {
-    params.painted = false
     p.background(220)
     p.textFont(emojiFont)
     params.player.move()
@@ -219,28 +221,27 @@ new Q5(p => {
     params.doctors = new p.Group()
     params.soldiers = new p.Group()
 
-    params.humans.overlaps(params.zombies, (human, zombie) => {
-      const humanEntity = params.humanList.find(h => h.sprite === human)
-      const zombieEntity = params.zombieList.find(z => z.sprite === zombie)
-      if (!humanEntity || !zombieEntity || zombieEntity.killed) return
+    params.humans.overlaps(params.zombies, (humanSprite, zombieSprite) => {
+      const humanEntity = findBySprite(params.humanList, humanSprite)
+      const zombieEntity = findBySprite(params.zombieList, zombieSprite)
+      if (!humanEntity || !zombieEntity) return
       sound.nomnom.play()
       humanEntity.sprite.delete()
       params.humanList.splice(params.humanList.indexOf(humanEntity), 1)
       params.zombieList.push(new Zombie(p, humanEntity.x, humanEntity.y, undefined, undefined, params.zombies))
     })
 
-    params.soldiers.overlaps(params.zombies, (soldier, zombie) => {
-      const zombieEntity = params.zombieList.find(z => z.sprite === zombie)
+    params.soldiers.overlaps(params.zombies, (soldierSprite, zombieSprite) => {
+      const zombieEntity = findBySprite(params.zombieList, zombieSprite)
       if (!zombieEntity || zombieEntity.killed) return
       sound.gunshot.play()
       zombieEntity.kill()
-      params.zombieList.splice(params.zombieList.indexOf(zombieEntity), 1)
-      zombieEntity.sprite.delete()
+      // stays in zombieList/group as a gravestone until resetLevel() clears it
     })
 
-    params.doctors.overlaps(params.zombies, (doctor, zombie) => {
-      const doctorEntity = params.doctorList.find(d => d.sprite === doctor)
-      const zombieEntity = params.zombieList.find(z => z.sprite === zombie)
+    params.doctors.overlaps(params.zombies, (doctorSprite, zombieSprite) => {
+      const doctorEntity = findBySprite(params.doctorList, doctorSprite)
+      const zombieEntity = findBySprite(params.zombieList, zombieSprite)
       if (!doctorEntity || !zombieEntity || zombieEntity.killed || doctorEntity.waiting) return
       doctorEntity.wait()
       sound.heal.play()
@@ -272,7 +273,6 @@ new Q5(p => {
       } else {
         params.previousMode = params.mode
         params.mode = gameMode.HELP
-        params.painted = false
       }
     } else if (params.mode === gameMode.GAME_OVER) {
       startGame()
@@ -286,7 +286,6 @@ new Q5(p => {
 
   const unpauseGame = () => {
     params.mode = gameMode.PLAYING
-    params.painted = false
     p.world.autoStep = true
   }
 
@@ -333,13 +332,10 @@ new Q5(p => {
     p.text('Player: Move with arrow keys, bite humans, avoid soldiers', 100, 225)
     p.text('Player: after being shot and returning to un-life,\nyou are briefly invulnerable', 100, 255)
     p.textFont(emojiFont)
-
-    params.painted = true
   }
 
   const removeHelp = () => {
     showGameObjects()
-    params.painted = false
   }
 
   p.draw = () => {
