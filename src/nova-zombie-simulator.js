@@ -1,5 +1,5 @@
-await import('q5')
-await import('q5play')
+import 'q5'
+import 'q5play'
 
 import Player from './nova.player.js'
 import Soldier from './nova.soldier.js'
