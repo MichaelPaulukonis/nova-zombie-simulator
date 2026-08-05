@@ -281,11 +281,13 @@ new Q5(p => {
 
   const pauseGame = () => {
     params.mode = gameMode.PAUSED
+    p.world.autoStep = false
   }
 
   const unpauseGame = () => {
     params.mode = gameMode.PLAYING
     params.painted = false
+    p.world.autoStep = true
   }
 
   const hideGameObjects = () => {
@@ -314,8 +316,11 @@ new Q5(p => {
     p.text('✭', 70, 130)
     p.text('🤢', 70, 160)
     p.text('⛑', 70, 190)
-    p.text('🥵', 70, 220)
-    p.text('🥵', 70, 250)
+
+    p.imageMode(p.CENTER)
+    p.image(images.player.normal, 70, 220, 32, 32)
+    p.image(images.player.invuln, 70, 250, 32, 32)
+    p.imageMode(p.CORNER)
 
     p.textAlign(p.LEFT)
     p.textSize(16)
@@ -326,7 +331,7 @@ new Q5(p => {
     p.text('Zombie: your babies! (you can ignore them now)', 100, 165)
     p.text('Doctor: No worries, but heals zombies back to life', 100, 195)
     p.text('Player: Move with arrow keys, bite humans, avoid soldiers', 100, 225)
-    p.text('Player: after being shot and returning to un-life, you are briefly invulnerable', 100, 255, 300)
+    p.text('Player: after being shot and returning to un-life,\nyou are briefly invulnerable', 100, 255)
     p.textFont(emojiFont)
 
     params.painted = true
