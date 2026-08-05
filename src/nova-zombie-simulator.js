@@ -350,6 +350,15 @@ new Q5(p => {
     // TODO: break out into functions or files
 
     if (params.mode === gameMode.ROUND_OVER) {
+      p.background(220)
+      displayScore()
+      p.background(0, 50)
+      p.fill(255)
+      p.textSize(32)
+      p.textAlign(p.CENTER)
+      p.textFont(displayFont)
+      p.text('Round Complete!', p.width / 2, p.height / 2)
+      p.textFont(emojiFont)
       return
     }
 
