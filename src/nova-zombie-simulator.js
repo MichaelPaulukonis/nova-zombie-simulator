@@ -209,7 +209,14 @@ new Q5(p => {
     
     let canvas = p.createCanvas(600, 600)
     canvas.parent(gameContainer)
-    
+
+    // q5's default color scale resolves to 0-1 float in this build, but every
+    // fill()/background() call in this codebase (carried over unchanged from
+    // the original p5.js version) assumes legacy 0-255 integers - e.g.
+    // background(0, 50) was clamping straight to opaque black instead of a
+    // translucent overlay. Force legacy integer mode to match.
+    p.colorMode(p.RGB, 255)
+
     p.frameRate(30)
     p.noStroke()
     p.textStyle(p.BOLD)
