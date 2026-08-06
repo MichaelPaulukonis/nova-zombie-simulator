@@ -69,10 +69,6 @@ export default class Mobile {
     if (this.y > this.ctx.height) this.sprite.y = this.y = 0
   }
 
-  touches (other) {
-    return this.ctx.dist(this.x, this.y, other.x, other.y) < 20
-  }
-
   proximityTo (sprite) {
     return this.ctx.dist(this.x, this.y, sprite.x, sprite.y)
   }
