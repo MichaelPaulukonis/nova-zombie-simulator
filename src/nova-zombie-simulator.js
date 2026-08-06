@@ -308,36 +308,51 @@ new Q5(p => {
     if (params.player.sprite) params.player.sprite.visible = true
   }
 
+  // TODO: move every entity to an image sprite sheet, like the player already
+  // is - would let icons share one draw path instead of the icon/image split
+  // below.
+  const helpRows = [
+    { icon: '😃', text: 'Human: tasty!' },
+    { icon: '✭', text: 'Soldier: beware!' },
+    { icon: '🤢', text: 'Zombie: your babies! (you can ignore them now)' },
+    { icon: '⛑', text: 'Doctor: No worries, but heals zombies back to life' },
+    { image: () => images.player.normal, text: 'Player: Move with arrow keys, bite humans, avoid soldiers' },
+    { image: () => images.player.invuln, text: 'Player: after being shot and returning to un-life,\nyou are briefly invulnerable' }
+  ]
+
   const displayHelp = () => {
     hideGameObjects()
 
     p.clear()
     p.background(220)
     p.fill(0)
-    p.textSize(32)
-    p.textAlign(p.CENTER)
-    p.textFont(emojiFont)
 
-    p.text('😃', 70, 100)
-    p.text('✭', 70, 130)
-    p.text('🤢', 70, 160)
-    p.text('⛑', 70, 190)
+    const iconX = 70
+    const textX = 100
+    const rowHeight = 30
+    let y = 100
 
-    p.imageMode(p.CENTER)
-    p.image(images.player.normal, 70, 220, 32, 32)
-    p.image(images.player.invuln, 70, 250, 32, 32)
-    p.imageMode(p.CORNER)
+    for (const row of helpRows) {
+      // both icon types share the same (x, y) center so rows line up
+      // regardless of whether the icon is emoji text or an image
+      if (row.image) {
+        p.imageMode(p.CENTER)
+        p.image(row.image(), iconX, y, 32, 32)
+      } else {
+        p.textAlign(p.CENTER, p.CENTER)
+        p.textSize(32)
+        p.textFont(emojiFont)
+        p.text(row.icon, iconX, y)
+      }
 
-    p.textAlign(p.LEFT)
-    p.textSize(16)
+      p.textAlign(p.LEFT, p.CENTER)
+      p.textSize(16)
+      p.textFont(displayFont)
+      p.text(row.text, textX, y)
 
-    p.textFont(displayFont)
-    p.text('Human: tasty!', 100, 105)
-    p.text('Soldier: beware!', 100, 135)
-    p.text('Zombie: your babies! (you can ignore them now)', 100, 165)
-    p.text('Doctor: No worries, but heals zombies back to life', 100, 195)
-    p.text('Player: Move with arrow keys, bite humans, avoid soldiers', 100, 225)
-    p.text('Player: after being shot and returning to un-life,\nyou are briefly invulnerable', 100, 255)
+      y += rowHeight
+    }
+
     p.textFont(emojiFont)
   }
 
