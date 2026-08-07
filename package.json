@@ -1,11 +1,11 @@
 {
   "name": "nova-zombie-simulator",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "predeploy": "DEPLOY_ENV=GH_PAGES npm run build",
+    "predeploy": "node scripts/bump-version.js && DEPLOY_ENV=GH_PAGES npm run build",
     "deploy": "gh-pages --nojekyll -d dist",
     "publish": "npm run deploy",
     "open": "/usr/bin/open -a \"/Applications/Google Chrome.app\" https://michaelpaulukonis.github.io/nova-zombie-simulator"

@@ -4,6 +4,16 @@ A game in p5js designed by my son, coded by us (with LLM assists)
 
 ![a screenshot of Nova Zombie Simulator play](./docs/nvs_screenshot.00.png)
 
+## Publishing
+
+`npm run deploy` builds and publishes to GitHub Pages. Before building, `predeploy` auto-bumps the version:
+
+- `scripts/bump-version.js` reads commit messages since the last release tag and picks a bump level from [Conventional Commits](https://www.conventionalcommits.org/): `feat:` → minor, `fix:`/other → patch, `!:` or `BREAKING CHANGE` → major.
+- It commits the bump (`chore(release): vX.Y.Z`) and creates an annotated tag — both local only.
+- After deploying, push the release yourself: `git push --follow-tags`.
+- Nothing to release (no commits since the last tag)? The script skips the bump and deploy continues as-is.
+
+Current version is shown in-game: bottom-right corner of the title screen, and in the HELP overlay (press `h`).
 
 ## Roadmap
 

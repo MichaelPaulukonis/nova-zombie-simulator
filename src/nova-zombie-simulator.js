@@ -353,6 +353,13 @@ new Q5(p => {
       y += rowHeight
     }
 
+    p.textAlign(p.LEFT, p.CENTER)
+    p.textSize(14)
+    p.textFont(displayFont)
+    p.fill(100)
+    p.text(`Version: v${__APP_VERSION__}`, textX, y + 10)
+    p.fill(0)
+
     p.textFont(emojiFont)
   }
 
@@ -433,6 +440,13 @@ function displayTitleScreen(ctx) {
 
   ctx.textSize(18)
   ctx.text('by Michael and Anthony Paulukonis', ctx.width / 2, ctx.height / 2 + 200)
+
+  ctx.textFont(displayFont)
+  ctx.textSize(12)
+  ctx.textAlign(ctx.RIGHT, ctx.BOTTOM)
+  ctx.fill(150)
+  ctx.text(`v${__APP_VERSION__}`, ctx.width - 10, ctx.height - 10)
+
   ctx.textFont(emojiFont)
 }
 

@@ -1,10 +1,14 @@
 // vite.config.js
 const { resolve } = require('path')
 const { defineConfig } = require('vite')
+const pkg = require('./package.json')
 
 module.exports = defineConfig({
   base: process.env.DEPLOY_ENV === 'GH_PAGES' ? '/nova-zombie-simulator/' : '',
   assetsInclude: ['**/**/*.wav'],
+  define: {
+    __APP_VERSION__: JSON.stringify(pkg.version)
+  },
   server: {
     port: 5173, // Vite's new default port (less likely to conflict)
     strictPort: false, // automatically find next available port if busy
